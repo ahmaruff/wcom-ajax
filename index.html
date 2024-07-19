@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CUSTOM ELEMENT AND AJAX</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main>
+        <section id="info">
+            <h1>Tugas 4 Pemrograman Web</h1>
+            <h2>Ahmad Ma'ruf | 2020150012</h2>
+            <p>Tugas Web Component & AJAX connected into API</p>
+        </section>
+        <section id="data">
+            <mrf-avatar id="avatar" size="200"></mrf-avatar>
+            <button id="changeAvatarBtn">Ganti Avatar!</button>
+        </section>
+        <article id="documentation">
+            <h1>Web Component MRF-AVATAR</h1>
+            <p>
+                Web komponen ini adalah web komponen untuk membuat icon avatar secara random.
+                web komponen ini memanfaatkan API dari <a href="https://dicebear.com">https://dicebear.com</a>
+            </p>
+            <section>
+                <h2>Overview</h2>
+                <p>
+                    Pada dasarnya terdapat 2 bagian penting pada web komponen ini,
+                    yaitu komponen avatar itu sendiri, serta button untuk update iconnya menggunakan ajax.
+                    keduanya berdiri secara terpisah untuk mengikuti prinsip <strong>Single Responsibility Principle</strong>
+                    yang artinya setiap komponen harusnya hanya memiliki 1 tugas spesifik. dalam hal ini web komponen avatar bertugas untuk menampilkan avatar.
+                    sedangkan komponen button bertugas untuk mengubah konten yang ada didalam avatar.
+                </p>
+                <h3>mrf-avatar</h3>
+                <p>
+                    Web komponen avatar didefinisikan pada file <em>mrf-avatar.js</em>. dengan nama tag komponennya adalah <em>mrf-avatar</em>.
+                    Komponen ini memiliki attribut <em>size</em> yang berfungsi untuk mengubah ukuran dari avatarnya dalam satuan pixel.
+                </p>
+                <p>
+                    komponen avatar ini juga memiliki method <em>setSvg()</em> yang berfungsi untuk mengubah konten avatarnya menggunakan data SVG
+                </p>
+                <h3>button</h3>
+                <p>
+                    komponen button bertugas untuk mengubah data pada avatar dengan cara mengambil data dari web API menggunakan AJAX.
+                    yaitu dengan cara menganti value pada query string <em>seed & backgroundColor</em> dengan random string.
+                    kemudian fetch api yang telah diupdate tersebut untuk diambil data SVG-nya.
+                    kemudian set data SVG tersebut kedalam komponen avatar menggunakan method <em>setSvg()</em> 
+                </p>
+            </section>
+            <strong><em>Untuk detail kode-nya bisa buka kodenya & cek komentar didalamnya!</em></strong>
+        </article>
+    </main>
+    <script src="./mrf-avatar.js"></script>
+    <script src="./app.js"></script>
+
+    <script>
+        // tambah event listener "click" ke button.
+        // jadi ketika button di klik, maka otomatis kode dibawah ini dijalankan.
+        document.getElementById('changeAvatarBtn').addEventListener('click', () => {
+
+            // GENERATE RANDOM STRING UNTUK UPDATE API URL
+            const randomSeed = generateRandomString(10);
+            const randomColor = generateRandomColor();
+            const apiUrl = `https://api.dicebear.com/9.x/pixel-art/svg?seed=${randomSeed}&backgroundColor=${randomColor}`;
+
+            // fetch API
+            fetch(apiUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.text();
+                })
+                .then(svgContent => {
+                    // Update data SVG dari komponen avatar menggunakan method setSvg()
+                    document.getElementById('avatar').setSvg(svgContent);
+                })
+                .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>
